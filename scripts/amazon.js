@@ -1,5 +1,6 @@
 import {cart, additemstoCart} from '../data/cart.js';
 import {products} from '../data/products.js';
+//import { checkout } from './checkout.js';
 
 const productDisplay = document.querySelector('.js-products-grid');
 
@@ -89,4 +90,7 @@ addtoCart.forEach((button,index)=>{
     
     });
 });
+
+// const productDisplay = document.querySelector('.js-checkout-link');
+
 
