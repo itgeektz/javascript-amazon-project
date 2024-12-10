@@ -1,26 +1,14 @@
-
-import {cartDisplay} from '../scripts/checkout/orderSummary.js';
-//import {payment} from '../scripts/checkout/paymentSummary.js';
-
-cartDisplay();
-//payment();
-
-
-
-
-
-
-/*
 import {cart, additemstoCart, removeCartitem, totalCartqty,addDeliveryOptionToCart, 
-        findCartitem, totalcartValue, totalshippingValue} from '../data/cart.js';
-import {products,matchProduct} from '../data/products.js';
-import { priceFormat } from './utils/money.js';
+    findCartitem, totalcartValue, totalshippingValue} from '../../data/cart.js';
+import {products,matchProduct} from '../../data/products.js';
+import { priceFormat } from '../utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
-import { deliveryOptions } from './deliveryOptions.js'; 
+import { deliveryOptions } from '../deliveryOptions.js'; 
+import {payment} from './paymentSummary.js';
 
-function cartDisplay() {
+export function cartDisplay() {
     const cartItemContainer = document.querySelector('.order-summary');
-    const paymentSummary = document.querySelector('.payment-summary');
+    
 
         let checkoutProductsHTML = "";
         cart.forEach((item,index)=>{
@@ -75,13 +63,68 @@ function cartDisplay() {
         });
 
         cartItemContainer.innerHTML = checkoutProductsHTML;
-        payment();
         let totalqty = totalCartqty();
         const returntoHome = document.querySelector('.return-to-home-link');
         returntoHome.innerHTML= `Total Quantity is ${totalqty}`;
-        initializeEventListeners(deliveryOptions);
+       
+        const radioButton = document.querySelectorAll(".delivery-option-input");    
+            radioButton.forEach((radio)=>{
+                radio.addEventListener('change',()=>{
+                        const selectedRadioButton = document.querySelectorAll('input[type="radio"]:checked');
+                        selectedRadioButton.forEach((selected)=>{
+                            const matchingItemId = selected.name; // Extract product ID
+                            let selectedOption = deliveryOptions[selected.id-1];
+                            let deliveryDate = dayjs().add(selectedOption.days, 'day');
+                            let dateString = deliveryDate.format('dddd , D MMMM YYYY');
+                            let dvdateContainer1 =  document.querySelector(`.js-dv-${matchingItemId}`);
+                            dvdateContainer1.innerHTML = `Delivery Date: ${dateString}`;
+                            addDeliveryOptionToCart(matchingItemId, selectedOption.deliveryOptionId);
+                            payment();
+                            });
+                    });
+                });
         
+
+        let deleteCheckoutitems = document.querySelectorAll('.js-delete-cart-items');
+        deleteCheckoutitems.forEach( (span,index) => {
         
+            span.addEventListener('click',()=>{
+                const productId = span.dataset.productId;
+                removeCartitem(productId);
+                const cartContainer = document.querySelector(`.js-cart-item-container-${productId}`);
+                cartContainer.remove();
+                totalCartqty();
+                location.reload();
+                
+            });
+                
+            }
+        ); 
+        
+        let updateCheckoutitems = document.querySelectorAll(`.update-quantity-link`);
+        updateCheckoutitems.forEach((update,index) => {
+            const productId = update.dataset.productId;
+            update.addEventListener('click',()=>{
+        
+                const cartudateContainer = document.querySelector(`.js-update-link-${productId}`);
+                const cartsaveContainer = document.querySelector(`.js-save-quantity-link-${productId}`);
+                cartudateContainer.classList.add("is-editing-quantity");
+                cartsaveContainer.classList.add('editing-quantity');
+                const savecartQty = document.querySelector(`.js-save-${productId}`);
+                savecartQty.addEventListener('click',()=>{
+                    const inputQtycontainer = document.querySelector(`.js-inputqty-${productId}`);
+                    additemstoCart(productId,inputQtycontainer.value);
+                    cartudateContainer.classList.remove("is-editing-quantity");
+                    cartsaveContainer.classList.remove('editing-quantity');
+                    //cartDisplay();
+                    
+                });
+                
+            });
+            
+            }
+        ); 
+    //addeventclosing
     }
 
     function deliveryOptionhtml(matchingItem){
@@ -111,75 +154,3 @@ function cartDisplay() {
 
         return deliveryHTML;
     }
-
-
-
-    function initializeEventListeners(deliveryOptions) {
-
-        const radioButton = document.querySelectorAll(".delivery-option-input");    
-            radioButton.forEach((radio)=>{
-                radio.addEventListener('change',()=>{
-                        const selectedRadioButton = document.querySelectorAll('input[type="radio"]:checked');
-                        selectedRadioButton.forEach((selected)=>{
-                            const matchingItemId = selected.name; // Extract product ID
-                            let selectedOption = deliveryOptions[selected.id-1];
-                            let deliveryDate = dayjs().add(selectedOption.days, 'day');
-                            let dateString = deliveryDate.format('dddd , D MMMM YYYY');
-                            let dvdateContainer1 =  document.querySelector(`.js-dv-${matchingItemId}`);
-                            dvdateContainer1.innerHTML = `Delivery Date: ${dateString}`;
-                            addDeliveryOptionToCart(matchingItemId, selectedOption.deliveryOptionId);
-                            payment();
-                            });
-                    });
-                });
-        
-
-        let deleteCheckoutitems = document.querySelectorAll('.js-delete-cart-items');
-        console.log(deleteCheckoutitems);
-
-        deleteCheckoutitems.forEach( (span,index) => {
-        
-            span.addEventListener('click',()=>{
-                const productId = span.dataset.productId;
-                console.log(`This is cart ${cart.productId}`);
-                removeCartitem(productId);
-                const cartContainer = document.querySelector(`.js-cart-item-container-${productId}`);
-                console.log(cartContainer);
-                cartContainer.remove();
-                totalCartqty();
-                location.reload();
-                
-            });
-                
-            }
-        ); 
-        
-        let updateCheckoutitems = document.querySelectorAll(`.update-quantity-link`);
-        console.log(updateCheckoutitems);
-        updateCheckoutitems.forEach((update,index) => {
-            const productId = update.dataset.productId;
-            update.addEventListener('click',()=>{
-                console.log(productId);
-                const cartudateContainer = document.querySelector(`.js-update-link-${productId}`);
-                const cartsaveContainer = document.querySelector(`.js-save-quantity-link-${productId}`);
-                cartudateContainer.classList.add("is-editing-quantity");
-                cartsaveContainer.classList.add('editing-quantity');
-                const savecartQty = document.querySelector(`.js-save-${productId}`);
-                console.log(savecartQty);
-                savecartQty.addEventListener('click',()=>{
-                    const inputQtycontainer = document.querySelector(`.js-inputqty-${productId}`);
-                    additemstoCart(productId,inputQtycontainer.value);
-                    cartudateContainer.classList.remove("is-editing-quantity");
-                    cartsaveContainer.classList.remove('editing-quantity');
-                    location.reload();
-                    
-                });
-                console.log(cartsaveContainer.classList);
-            });
-            
-            }
-        ); 
-    //addeventclosing
-    }
-
-    */
