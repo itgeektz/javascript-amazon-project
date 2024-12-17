@@ -8,7 +8,6 @@ import { deliveryOptions } from '../deliveryOptions.js';
 
 export function payment(){
     const paymentSummary = document.querySelector('.payment-summary');
-    let paymentHTML = '';
     let totalqty = totalCartqty();
     let totalValue = totalcartValue(products);
     let totalDeliverycharges = totalshippingValue(deliveryOptions);

@@ -62,10 +62,11 @@ export function additemstoCart(productId,quantity){
     if (cartItem) {
       // Add the deliveryOptionId to the found item
       cartItem.deliveryOptionId = deliveryOptionId;
+      savetoCart();
     } else {
       console.log("Product not found in the cart.");
     }
-    savetoCart();
+    
   }
 
 

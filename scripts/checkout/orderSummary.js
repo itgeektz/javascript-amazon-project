@@ -3,7 +3,7 @@ import {cart, additemstoCart, removeCartitem, totalCartqty,addDeliveryOptionToCa
 import {products,matchProduct} from '../../data/products.js';
 import { priceFormat } from '../utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
-import { deliveryOptions } from '../deliveryOptions.js'; 
+import { deliveryOptions,deliveryDatedisp} from '../deliveryOptions.js'; 
 import {payment} from './paymentSummary.js';
 
 export function cartDisplay() {
@@ -20,16 +20,20 @@ export function cartDisplay() {
                     matchingItem = product;
                 }
             });
+            let isDeliveryDate;
+            if (item.deliveryOptionId){
+                isDeliveryDate = 1;
+                //deliveryDatedisp(item.productId,delivery.deliveryOptionId);
+                //payment();
+            }
             
             checkoutProductsHTML += `<div class="cart-item-container js-cart-item-container-${matchingItem.id}" data-product-id="${matchingItem.id}">
                         <div class="delivery-date js-dv-${matchingItem.id}">
-                        Delivery Date: - 
+                        ${isDeliveryDate ? `Delivery Date - ${deliveryDatedisp(item.productId,item.deliveryOptionId)}` : "Delivery Date: - Choose an Option" }
                         </div>
-
                         <div class="cart-item-details-grid">
                         <img class="product-image"
                             src="${matchingItem.image}">
-
                         <div class="cart-item-details">
                             <div class="product-name">
                             ${matchingItem.name} 
@@ -45,7 +49,7 @@ export function cartDisplay() {
                                 Update
                             </span>
                             <span class="is-editing-quantity js-save-quantity-link-${matchingItem.id}"> 
-                                <input class="quantity-input js-inputqty-${matchingItem.id}">
+                                <input class="quantity-input js-inputqty-${matchingItem.id}" id="${matchingItem.id}">
                                 <span class="link-primary js-save-${matchingItem.id}">Save</span></span>
                             <button class="delete-quantity-link link-primary js-delete-cart-items" data-product-id="${matchingItem.id}">
                                 Delete
@@ -53,13 +57,14 @@ export function cartDisplay() {
                             </div>
                         </div>
                         <div class="delivery-options">
-                            <div class="delivery-options-title">
-                                Choose a delivery option:
+                              <div class="delivery-options-title">
+                             Choose a delivery option:
                             </div>
-                                ${deliveryOptionhtml(matchingItem)}
-                            </div>
+                                ${deliveryOptionhtml(matchingItem,item)}
+                                </div>
                     </div>
                     </div>`;
+
         });
 
         cartItemContainer.innerHTML = checkoutProductsHTML;
@@ -73,14 +78,12 @@ export function cartDisplay() {
                         const selectedRadioButton = document.querySelectorAll('input[type="radio"]:checked');
                         selectedRadioButton.forEach((selected)=>{
                             const matchingItemId = selected.name; // Extract product ID
-                            let selectedOption = deliveryOptions[selected.id-1];
-                            let deliveryDate = dayjs().add(selectedOption.days, 'day');
-                            let dateString = deliveryDate.format('dddd , D MMMM YYYY');
-                            let dvdateContainer1 =  document.querySelector(`.js-dv-${matchingItemId}`);
+                            let dateString = deliveryDatedisp(selected.name,selected.id);
+                            let dvdateContainer1 =  document.querySelector(`.js-dv-${selected.name}`);
                             dvdateContainer1.innerHTML = `Delivery Date: ${dateString}`;
-                            addDeliveryOptionToCart(matchingItemId, selectedOption.deliveryOptionId);
+                            addDeliveryOptionToCart(matchingItemId, deliveryOptions[selected.id-1].deliveryOptionId);
                             payment();
-                            });
+                        });
                     });
                 });
         
@@ -116,8 +119,7 @@ export function cartDisplay() {
                     additemstoCart(productId,inputQtycontainer.value);
                     cartudateContainer.classList.remove("is-editing-quantity");
                     cartsaveContainer.classList.remove('editing-quantity');
-                    //cartDisplay();
-                    
+                    location.reload();
                 });
                 
             });
@@ -127,18 +129,26 @@ export function cartDisplay() {
     //addeventclosing
     }
 
-    function deliveryOptionhtml(matchingItem){
+    function deliveryOptionhtml(matchingItem,item){
         let deliveryHTML = '';
         deliveryOptions.forEach((delivery,index)=>{
                 let deliveryDate = dayjs().add(delivery.days, 'day');
                 let dateString = deliveryDate.format('dddd , D MMMM YYYY');
+                let isChecked;
+                //deliveryDatedisp(delivery);
                 let deliveryCharges = delivery.pricecents === 0 ? `Free Shipping` : `$${priceFormat(delivery.pricecents)} - Shipping Charges`;
+                if (item.deliveryOptionId === delivery.deliveryOptionId){
+                    isChecked = 1;
+                    //deliveryDatedisp(item.productId,delivery.deliveryOptionId);
+                    payment();
+                }
                 deliveryHTML += `
+                          
                             <div class="delivery-option">
-                                <input type="radio"
+                                <input type="radio" ${isChecked ? 'checked' : ''}
                                     class="delivery-option-input js-dv-opt-${matchingItem.id}-${delivery.deliveryOptionId}"
-                                    id = "${delivery.deliveryOptionId}"
-                                    name="${matchingItem.id}">
+                                    id = "${matchingItem.id}-${delivery.deliveryOptionId}"
+                                    name="${matchingItem.id}-${matchingItem.id}">
                                 <div>
                                     <div class="delivery-option-date">
                                         ${dateString}
@@ -147,10 +157,15 @@ export function cartDisplay() {
                                         ${deliveryCharges}
                                     </div>
                                 </div>
-                            </div>`
-                            ;
-                    
+                            </div>
+                            `;
+                           
+                            
             });
-
+            
         return deliveryHTML;
+        
     }
+
+
+   

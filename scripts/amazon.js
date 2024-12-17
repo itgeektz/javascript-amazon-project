@@ -1,6 +1,6 @@
-import {cart, additemstoCart} from '../data/cart.js';
+import {cart, additemstoCart,totalCartqty,savetoCart} from '../data/cart.js';
 import {products} from '../data/products.js';
-//import { checkout } from './checkout.js';
+
 
 const productDisplay = document.querySelector('.js-products-grid');
 
@@ -64,17 +64,8 @@ productDisplay.innerHTML = productsHTML;
 
 const addtoCart = document.querySelectorAll('.js-add-to-cart');
 
+document.querySelector('.js-cart-quantity').innerHTML = totalCartqty();
 
-
-function totalCartquantity(){
-
-  let totalQuantity = 0;
-
-      cart.forEach((item)=>{
-        totalQuantity += item.quantity;
-      })
-      document.querySelector('.js-cart-quantity').innerHTML = totalQuantity;
-}
 
 
 addtoCart.forEach((button,index)=>{
@@ -88,8 +79,7 @@ addtoCart.forEach((button,index)=>{
     opacity = setInterval(addedtoCart.remove("added-to-cart"),2000);
     additemstoCart(productId,quantity);
     clearInterval(opacity);
-    totalCartquantity();
-    
+     location.reload();
     });
 });
 

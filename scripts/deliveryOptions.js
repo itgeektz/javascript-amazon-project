@@ -1,3 +1,5 @@
+import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
+
 export const deliveryOptions = [{
     deliveryOptionId: '1',
     days: 7,
@@ -13,3 +15,10 @@ export const deliveryOptions = [{
     days: 1,
     pricecents: 999,
 }];
+
+export function deliveryDatedisp(selected,selectedId){
+    let selectedOption = deliveryOptions[selectedId-1];
+    let deliveryDate = dayjs().add(selectedOption.days, 'day');
+    let dateString = deliveryDate.format('dddd , D MMMM YYYY');
+    return dateString
+}
