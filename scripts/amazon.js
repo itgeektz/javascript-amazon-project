@@ -21,15 +21,17 @@ products.forEach((product, index) => {
 
           <div class="product-rating-container">
             <img class="product-rating-stars"
-              src="images/ratings/rating-${(product.rating.stars) * 10}.png">
+              src="${product.getStarUrl()}">
             <div class="product-rating-count link-primary">
               ${product.rating['count']}
             </div>
           </div>
-
+          
           <div class="product-price">
-           $${(product.priceCents / 100).toFixed(2)}
-          </div>
+           ${product.getPrice()}
+           </div>
+           
+           <div>${product.info()}</div>
 
           <div class="product-quantity-container">
             <select class="js-quantity-selector-${product.id}">
@@ -45,7 +47,9 @@ products.forEach((product, index) => {
               <option value="10">10</option>
             </select>
           </div>
-
+          
+              
+          
           <div class="product-spacer"></div>
 
           <div class="added-to-cart js-added-to-cart-${product.id}">

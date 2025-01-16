@@ -1,14 +1,65 @@
-export function matchProduct(productId){
-    let matchingItem;
-    products.forEach((product,index) => {
-      
-      if(productId == product.id){
-        matchingItem = product;
-        return matchingItem;
+import {priceFormat} from '../scripts/utils/money.js';
+
+class product {
+     id;
+      image;
+      name; 
+      rating;
+      priceCents;
+      keywords;
+
+      constructor(productDetails){
+        this.id = productDetails.id;
+        this.image = productDetails.image;
+        this.name = productDetails.name;
+        this.rating = productDetails.rating;
+        this.priceCents = productDetails.priceCents;
+        this.keywords = productDetails.keywords;
+
       }
-      });
-      
+
+      matchProduct(productId){
+        let matchingItem;
+        products.forEach((product,index) => {
+          
+          if(productId == product.id){
+            matchingItem = product;
+            return matchingItem;
+          }
+          });
+          
+    }
+
+    getStarUrl(){
+      return `images/ratings/rating-${(this.rating.stars) * 10}.png`;
+    }
+
+    getPrice(){
+      return `$${priceFormat(this.priceCents)}`;
+    }
+    info(){
+      return "";
+    }
 }
+
+class clothing extends product { 
+
+  type;
+  sizeChartLink;
+
+  constructor(productDetails){
+    super(productDetails);
+    this.type = productDetails.type;
+    this.sizeChartLink = productDetails.sizeChartLink;
+  }
+
+  info(){
+    return `<a href="${this.sizeChartLink}">Size Chart</a>`;
+  }
+  
+
+}
+
 
 export const products = [
   {
@@ -669,4 +720,13 @@ export const products = [
       "mens"
     ]
   }
-];
+].map((productDetails)=>{
+  if(productDetails.type === 'clothing'){
+    let result1 = new clothing(productDetails);
+    console.log(result1.info());
+    return new clothing(productDetails);
+  }
+  return new product(productDetails);
+
+});
+

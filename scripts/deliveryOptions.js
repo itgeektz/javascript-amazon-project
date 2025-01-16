@@ -17,8 +17,13 @@ export const deliveryOptions = [{
 }];
 
 export function deliveryDatedisp(selected,selectedId){
+    console.log(deliveryOptions[2].days);
     let selectedOption = deliveryOptions[selectedId-1];
-    let deliveryDate = dayjs().add(selectedOption.days, 'day');
+    console.log(selectedOption);
+    let deliveryDays = selectedOption.days;
+    console.log(deliveryDays);
+    let deliveryDate = dayjs().add(deliveryDays, 'day');
+    console.log(deliveryDate);
     let dateString = deliveryDate.format('dddd , D MMMM YYYY');
     return dateString
 }

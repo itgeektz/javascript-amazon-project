@@ -1,6 +1,8 @@
 import {cart, additemstoCart, removeCartitem, totalCartqty,addDeliveryOptionToCart, 
     findCartitem, totalcartValue, totalshippingValue} from '../../data/cart.js';
-import {products,matchProduct} from '../../data/products.js';
+
+//import '../data/cart-class.js';
+import {products} from '../../data/products.js';
 import { priceFormat } from '../utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import { deliveryOptions,deliveryDatedisp} from '../deliveryOptions.js'; 
@@ -142,9 +144,7 @@ export function cartDisplay() {
                     //deliveryDatedisp(item.productId,delivery.deliveryOptionId);
                     payment();
                 }
-                deliveryHTML += `
-                          
-                            <div class="delivery-option">
+                deliveryHTML += `<div class="delivery-option">
                                 <input type="radio" ${isChecked ? 'checked' : ''}
                                     class="delivery-option-input js-dv-opt-${matchingItem.id}-${delivery.deliveryOptionId}"
                                     id = "${matchingItem.id}-${delivery.deliveryOptionId}"
